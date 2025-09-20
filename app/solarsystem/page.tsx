@@ -7,14 +7,14 @@ import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { OrbitControls, Stars, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 
-function Planet({size , distance, orbitSpeed,spinSpeed, textureUrl}) {
-  const orbit = useRef();
-  const spin = useRef();
+function Planet({size , distance, orbitSpeed,spinSpeed, textureUrl}:any) {
+const orbit = useRef<THREE.Group>(null!);
+const spin = useRef<THREE.Mesh>(null!);
   const texture = useLoader(THREE.TextureLoader, textureUrl);
 
- useFrame((_, value) => {
-  orbit.current.rotation.y += orbitSpeed * value; 
-  spin.current.rotation.y += spinSpeed * value;   
+ useFrame((_, delta) => {
+  orbit.current.rotation.y += orbitSpeed * delta; 
+  spin.current.rotation.y += spinSpeed * delta;   
 });
 
 
@@ -50,7 +50,7 @@ function Sun() {
 
 export default function SolarSystem() {
   const planets = [{ name: "Mercury", size: 0.5, distance: 3.3,orbitSpeed: 0.8, spinSpeed: 0.02, textureUrl: "/mercury.webp" },
-    { name: "Venus",   size: 0.35, distance: 4.4, orbitSpeed: 0.6, spinSpeed: 0.015, textureUrl: "/Venus.jpg" },
+    { name: "Venus",   size: 0.35, distance: 4.4, orbitSpeed: 0.6, spinSpeed: 0.015, textureUrl: "/venus.jpg" },
     { name: "Earth",   size: 0.38, distance: 5.2, orbitSpeed: 0.5, spinSpeed: 0.02, textureUrl: "/image.png" },
     { name: "Mars",    size: 0.32, distance: 6.3, orbitSpeed: 0.4, spinSpeed: 0.03, textureUrl: "/mars.jpeg" },
     { name: "Jupiter", size: 0.9, distance: 8.2, orbitSpeed: 0.2, spinSpeed: 0.08, textureUrl: "/jupiter.png" },
