@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, Suspense } from "react";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { OrbitControls, Stars, useTexture } from "@react-three/drei";
 import * as THREE from "three";
@@ -15,8 +15,9 @@ type PlanetProps = {
 };
 
 function Planet({ name, size, distance, orbitSpeed, spinSpeed, textureUrl }: PlanetProps) {
-  const orbit = useRef<THREE.Group | null>(null);
-  const spin = useRef<THREE.Mesh | null>(null);
+  const orbit = useRef<THREE.Group>(null);
+  const spin = useRef<THREE.Mesh>(null);
+
   const texture = useLoader(THREE.TextureLoader, textureUrl);
 
   useFrame((_, delta) => {
@@ -69,11 +70,13 @@ export default function SolarSystem() {
     <div style={{ width: "100vw", height: "100vh" }}>
       <Canvas shadows camera={{ position: [0, 8, 20], fov: 50 }}>
         <ambientLight intensity={0.1} />
-        <Sun />
+        <Suspense fallback={null}>
+          <Sun />
+          {planets.map((p) => (
+            <Planet key={p.name} {...p} />
+          ))}
+        </Suspense>
         <Stars radius={100} depth={50} count={30000} factor={0.4} fade />
-        {planets.map((p) => (
-          <Planet key={p.name} {...p} />
-        ))}
         <OrbitControls />
       </Canvas>
     </div>
