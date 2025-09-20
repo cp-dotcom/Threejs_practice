@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { Environment, OrbitControls, Sky, useTexture } from "@react-three/drei";
 
 function RotatingCube() {
-  const ref = useRef();
+   const ref = useRef<THREE.Mesh>(null!);
 
 
   const texture=useTexture("/image.png")
@@ -26,7 +26,7 @@ export default function App() {
   return (
     <div className=" w-screen  h-screen">
     <Canvas>
-        <Sky sunPosition={100/10/13}/>
+        <Sky sunPosition={[100, 10, 13]} />
         <Environment preset="sunset"/>
       <directionalLight />
       <RotatingCube />
