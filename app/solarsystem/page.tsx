@@ -1,26 +1,32 @@
-
-
 "use client";
 
-import React, { Suspense, useRef } from "react";
+import React, { useRef } from "react";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { OrbitControls, Stars, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 
-function Planet({size , distance, orbitSpeed,spinSpeed, textureUrl}:any) {
-const orbit = useRef<THREE.Group>(null!);
-const spin = useRef<THREE.Mesh>(null!);
+type PlanetProps = {
+  name: string;
+  size: number;
+  distance: number;
+  orbitSpeed: number;
+  spinSpeed: number;
+  textureUrl: string;
+};
+
+function Planet({ name, size, distance, orbitSpeed, spinSpeed, textureUrl }: PlanetProps) {
+  const orbit = useRef<THREE.Group | null>(null);
+  const spin = useRef<THREE.Mesh | null>(null);
   const texture = useLoader(THREE.TextureLoader, textureUrl);
 
- useFrame((_, delta) => {
-  orbit.current.rotation.y += orbitSpeed * delta; 
-  spin.current.rotation.y += spinSpeed * delta;   
-});
-
+  useFrame((_, delta) => {
+    if (orbit.current) orbit.current.rotation.y += orbitSpeed * delta;
+    if (spin.current) spin.current.rotation.y += spinSpeed * delta;
+  });
 
   return (
     <group ref={orbit}>
-      <mesh ref={spin} position={[distance, 0, 0]} castShadow receiveShadow >
+      <mesh ref={spin} position={[distance, 0, 0]} castShadow receiveShadow>
         <sphereGeometry args={[size, 32, 32]} />
         <meshStandardMaterial map={texture} />
       </mesh>
@@ -28,28 +34,28 @@ const spin = useRef<THREE.Mesh>(null!);
   );
 }
 
-
 function Sun() {
-  const doon=useTexture("/sun.jpg")
+  const sunTexture = useTexture("/sun.jpg");
+
   return (
     <group>
-      <mesh >
+      <mesh>
         <sphereGeometry args={[2.6, 64, 64]} />
-        <meshPhongMaterial emissive="#ff8800" emissiveIntensity={1} color="#ad6d14ff" map={doon} />
+        <meshPhongMaterial
+          emissive="#ff8800"
+          emissiveIntensity={1}
+          color="#ad6d14"
+          map={sunTexture}
+        />
       </mesh>
-    <pointLight
-  position={[0, 0, 0]}   
-  intensity={50}          
-  distance={100}         
-  castShadow
-
-/>
+      <pointLight position={[0, 0, 0]} intensity={50} distance={100} castShadow />
     </group>
   );
 }
 
 export default function SolarSystem() {
-  const planets = [{ name: "Mercury", size: 0.5, distance: 3.3,orbitSpeed: 0.8, spinSpeed: 0.02, textureUrl: "/mercury.webp" },
+  const planets: PlanetProps[] = [
+    { name: "Mercury", size: 0.5, distance: 3.3, orbitSpeed: 0.8, spinSpeed: 0.02, textureUrl: "/mercury.webp" },
     { name: "Venus",   size: 0.35, distance: 4.4, orbitSpeed: 0.6, spinSpeed: 0.015, textureUrl: "/venus.jpg" },
     { name: "Earth",   size: 0.38, distance: 5.2, orbitSpeed: 0.5, spinSpeed: 0.02, textureUrl: "/image.png" },
     { name: "Mars",    size: 0.32, distance: 6.3, orbitSpeed: 0.4, spinSpeed: 0.03, textureUrl: "/mars.jpeg" },
@@ -64,10 +70,10 @@ export default function SolarSystem() {
       <Canvas shadows camera={{ position: [0, 8, 20], fov: 50 }}>
         <ambientLight intensity={0.1} />
         <Sun />
-          <Stars radius={100} depth={50} count={150000} factor={0.4} fade />
-          {planets.map((p) => (
-            <Planet key={p.name} {...p} />
-          ))}
+        <Stars radius={100} depth={50} count={30000} factor={0.4} fade />
+        {planets.map((p) => (
+          <Planet key={p.name} {...p} />
+        ))}
         <OrbitControls />
       </Canvas>
     </div>
